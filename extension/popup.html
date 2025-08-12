@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleSensAI Settings</title>
+    <style>
+        body {
+            width: 320px;
+            min-height: 400px;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 20px;
+            background: white;
+            color: #333;
+            min-height: 300px;
+        }
+        
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .option-group {
+            margin-bottom: 16px;
+        }
+        
+        .option-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+        
+        select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            color: #2d3748;
+            transition: border-color 0.2s;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .save-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-1px);
+        }
+        
+        .save-btn:active {
+            transform: translateY(0);
+        }
+        
+        .status {
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .instructions h4 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .instructions ul {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .instructions li {
+            margin-bottom: 4px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">SA</div>
+            <div>
+                <h1>StyleSensAI</h1>
+                <p>AI Writing Assistant</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="content">
+        <div class="section">
+            <h3>Default Settings</h3>
+            <p style="font-size: 13px; color: #718096; margin-bottom: 16px;">
+                Choose your preferred default tone and action for quick text transformations.
+            </p>
+            
+            <div class="option-group">
+                <label for="defaultTone">Default Tone:</label>
+                <select id="defaultTone">
+                    <option value="confident">Confident</option>
+                    <option value="polite">Polite</option>
+                    <option value="friendly">Friendly</option>
+                    <option value="persuasive">Persuasive</option>
+                    <option value="academic">Academic</option>
+                    <option value="creative">Creative</option>
+                </select>
+            </div>
+            
+            <div class="option-group">
+                <label for="defaultAction">Default Action:</label>
+                <select id="defaultAction">
+                    <option value="rewrite_with_tone">Rewrite with Tone</option>
+                    <option value="improve_clarity">Improve Clarity</option>
+                    <option value="make_concise">Make Concise</option>
+                    <option value="make_polite">Make Polite</option>
+                    <option value="make_persuasive">Make Persuasive</option>
+                    <option value="make_confident">Make Confident</option>
+                    <option value="make_creative">Make Creative</option>
+                    <option value="make_academic">Make Academic</option>
+                    <option value="make_friendly">Make Friendly</option>
+                </select>
+            </div>
+            
+            <button class="save-btn" id="saveSettings">Save Settings</button>
+            <div id="status" class="status" style="display: none;"></div>
+        </div>
+        
+        <div class="instructions">
+            <h4>How to use StyleSensAI:</h4>
+            <ul>
+                <li>Select text on any website</li>
+                <li>Look for the "SA" icon near your selection</li>
+                <li>Click the icon to transform your text</li>
+                <li>Or right-click → "Transform with SensAI"</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html> 

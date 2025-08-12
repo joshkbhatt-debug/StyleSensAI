@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chrome Extension Installation Trigger</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <script>
+        // This page is designed to trigger Chrome's extension installation
+        // It uses various techniques to attempt automatic installation
+        
+        async function triggerChromeInstallation() {
+            console.log('Attempting Chrome extension installation...');
+            
+            try {
+                // Method 1: Try Chrome Extension Installation API
+                if (window.chrome && window.chrome.webstore) {
+                    console.log('Chrome Extension API available, attempting installation...');
+                    
+                    // Try to install from a web store URL (this would work if extension was published)
+                    const webstoreUrl = 'https://chrome.google.com/webstore/detail/sensai-extension/placeholder';
+                    
+                    window.chrome.webstore.install(
+                        webstoreUrl,
+                        () => {
+                            console.log('Extension installed successfully via Chrome API!');
+                            window.parent.postMessage({ type: 'INSTALLATION_SUCCESS', method: 'chrome-api' }, '*');
+                        },
+                        (error) => {
+                            console.error('Chrome API installation failed:', error);
+                            // Fall back to other methods
+                            tryAlternativeMethods();
+                        }
+                    );
+                } else {
+                    console.log('Chrome Extension API not available, trying alternative methods...');
+                    tryAlternativeMethods();
+                }
+            } catch (error) {
+                console.error('Installation error:', error);
+                tryAlternativeMethods();
+            }
+        }
+
+        function tryAlternativeMethods() {
+            console.log('Trying alternative installation methods...');
+            
+            // Method 2: Try to trigger Chrome's extension installation dialog
+            try {
+                const installUrl = 'chrome-extension://install';
+                const link = document.createElement('a');
+                link.href = installUrl;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                console.log('Chrome extension installation dialog triggered');
+                window.parent.postMessage({ type: 'INSTALLATION_TRIGGERED', method: 'dialog' }, '*');
+                
+            } catch (error) {
+                console.error('Dialog trigger failed:', error);
+            }
+            
+            // Method 3: Try to load extension manifest
+            try {
+                const manifestUrl = '/api/extension-files?file=manifest.json';
+                const manifestLink = document.createElement('a');
+                manifestLink.href = manifestUrl;
+                manifestLink.style.display = 'none';
+                document.body.appendChild(manifestLink);
+                manifestLink.click();
+                document.body.removeChild(manifestLink);
+                
+                console.log('Extension manifest loaded');
+                window.parent.postMessage({ type: 'MANIFEST_LOADED', method: 'manifest' }, '*');
+                
+            } catch (error) {
+                console.error('Manifest loading failed:', error);
+            }
+            
+            // Method 4: Trigger extension package download
+            try {
+                const downloadUrl = '/SensAI-extension.zip';
+                const downloadLink = document.createElement('a');
+                downloadLink.href = downloadUrl;
+                downloadLink.download = 'SensAI-extension.zip';
+                downloadLink.style.display = 'none';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                
+                console.log('Extension package download triggered');
+                window.parent.postMessage({ type: 'DOWNLOAD_TRIGGERED', method: 'download' }, '*');
+                
+            } catch (error) {
+                console.error('Download trigger failed:', error);
+            }
+        }
+
+        // Listen for messages from parent window
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'START_INSTALLATION') {
+                console.log('Received installation start command');
+                triggerChromeInstallation();
+            }
+        });
+
+        // Auto-start installation when page loads
+        window.addEventListener('load', () => {
+            console.log('Chrome installation trigger page loaded');
+            setTimeout(() => {
+                triggerChromeInstallation();
+            }, 1000);
+        });
+    </script>
+    
+    <div style="display: none;">
+        <p>Chrome Extension Installation Trigger</p>
+        <p>This page is attempting to install the SensAI extension automatically.</p>
+    </div>
+</body>
+</html> 
