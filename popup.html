@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StyleSensei Settings</title>
+  <style>
+    body {
+      width: 350px;
+      min-height: 400px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .container {
+      padding: 20px;
+      color: white;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .logo svg {
+      filter: brightness(0) invert(1);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+      margin: 4px 0 0 0;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input[type="password"]::placeholder, input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    input[type="password"]:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: rgba(255, 255, 255, 0.9);
+      color: #667eea;
+      border-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .btn.primary:hover {
+      background: white;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .status.success {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #10b981;
+    }
+
+    .status.error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .info-box h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    .info-box ul {
+      margin: 8px 0 0 0;
+      padding-left: 16px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .info-box li {
+      margin-bottom: 4px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .version {
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L14 8H22L16 12L18 20L12 16L6 20L8 12L2 8H10L12 2Z" fill="currentColor"/>
+        </svg>
+        <span></span>
+      </div>
+      <h1>StyleSensei</h1>
+      <p class="subtitle">AI Writing Assistant</p>
+    </div>
+
+    <div id="status" class="status" style="display: none;"></div>
+
+    <form id="settingsForm">
+      <div class="form-group">
+        <label for="apiKey">OpenAI API Key:</label>
+        <div class="input-wrapper">
+          <input type="password" id="apiKey" placeholder="sk-..." required>
+          <button type="button" class="toggle-password" onclick="togglePassword()">Show</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn primary">Save Settings</button>
+    </form>
+
+    <div class="info-box">
+      <h3>How to use StyleSensei:</h3>
+      <ul>
+        <li>Select any text on any website</li>
+        <li>Click the StyleSensei icon that appears</li>
+        <li>Choose your desired tone and action</li>
+        <li>Copy or replace the improved text</li>
+      </ul>
+      <p><strong>Or:</strong> Right-click selected text → "Transform with StyleSensei"</p>
+    </div>
+
+    <div class="info-box">
+      <h3>Get your OpenAI API Key:</h3>
+      <p>Visit <strong>platform.openai.com</strong> → Create account → API Keys → Create new key</p>
+    </div>
+
+    <div class="version">
+      StyleSensei v1.0.0
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 

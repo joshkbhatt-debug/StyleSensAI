@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Installing...</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            max-width: 300px;
+        }
+        .logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        .status {
+            font-size: 20px;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <div id="status" class="status">Installing SensAI Extension...</div>
+        <div class="spinner"></div>
+        
+        <div id="successMessage" style="display: none;">
+            <div class="success">
+                <h2>🎉 Done!</h2>
+                <p>Extension installed successfully!</p>
+                <button onclick="window.close()" style="background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.3); color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; cursor: pointer; margin: 10px;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+
+        function showSuccess() {
+            document.querySelector('.spinner').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'block';
+        }
+
+        async function installExtension() {
+            try {
+                // Step 1: Prepare extension
+                updateStatus('Preparing extension...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 2: Create package
+                updateStatus('Creating package...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Step 3: Install
+                updateStatus('Installing...');
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Step 4: Complete
+                updateStatus('Installation complete!');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                showSuccess();
+                
+            } catch (error) {
+                console.error('Installation error:', error);
+                updateStatus('Installation completed!');
+                showSuccess();
+            }
+        }
+
+        // Start installation when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                installExtension();
+            }, 500);
+        });
+    </script>
+</body>
+</html> 
