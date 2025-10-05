@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabaseAdmin } from '../../../lib/supabaseAdmin'
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { incrementWordUsage } from '../../../utils/access.server'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -8,8 +8,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Get user session
-    const { data: { session }, error } = await supabaseAdmin.auth.getSession()
+    const supabase = createServerSupabaseClient({ req, res })
+    const { data: { session }, error } = await supabase.auth.getSession()
+
     if (error || !session?.user) {
       return res.status(401).json({ error: 'Unauthorized' })
     }
@@ -19,7 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Invalid wordsUsed parameter' })
     }
 
-    // Increment word usage using server-side utility
     await incrementWordUsage(session.user.id, wordsUsed)
 
     return res.status(200).json({ success: true })

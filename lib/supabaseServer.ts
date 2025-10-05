@@ -25,7 +25,7 @@ export interface AnalysisResult {
 
 export async function saveAnalysis(result: AnalysisResult): Promise<{ id: string }> {
   const { data, error } = await supabase
-    .from('histories')
+    .from('history')
     .insert({
       user_id: result.userId,
       tone: result.tones.join(','),
@@ -46,7 +46,7 @@ export async function saveAnalysis(result: AnalysisResult): Promise<{ id: string
 
 export async function getAnalysis(id: string, userId?: string): Promise<AnalysisResult | null> {
   let query = supabase
-    .from('histories')
+    .from('history')
     .select('*')
     .eq('id', id);
 
@@ -54,7 +54,7 @@ export async function getAnalysis(id: string, userId?: string): Promise<Analysis
     query = query.eq('user_id', userId);
   }
 
-  const { data, error } = await query.single();
+  const { data, error } = await query.maybeSingle();
 
   if (error || !data) {
     return null;
@@ -73,7 +73,7 @@ export async function getAnalysis(id: string, userId?: string): Promise<Analysis
 
 export async function getUserHistory(userId: string, limit = 10): Promise<AnalysisResult[]> {
   const { data, error } = await supabase
-    .from('histories')
+    .from('history')
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
@@ -84,7 +84,7 @@ export async function getUserHistory(userId: string, limit = 10): Promise<Analys
     return [];
   }
 
-  return data.map(item => ({
+  return (data || []).map(item => ({
     id: item.id,
     userId: item.user_id,
     text: item.input_text,

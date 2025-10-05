@@ -1,28 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabaseAdmin } from '../../lib/supabaseAdmin'
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { getUserAccess } from '../../utils/access.server'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Get session from auth cookie or Authorization header
-    const authHeader = req.headers.authorization
-    let userId: string | null = null
+    const supabase = createServerSupabaseClient({ req, res })
+    const { data: { session }, error } = await supabase.auth.getSession()
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7)
-      const { data: { user }, error } = await supabaseAdmin.auth.getUser(token)
-      if (!error && user) {
-        userId = user.id
-      }
-    } else {
-      // Try to get session from cookies
-      const { data: { session }, error } = await supabaseAdmin.auth.getSession()
-      if (!error && session?.user) {
-        userId = session.user.id
-      }
-    }
-
-    if (!userId) {
+    if (error || !session?.user) {
       return res.status(200).json({
         authenticated: false,
         onboardingComplete: false,
@@ -31,8 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     }
 
-    // Get user access using server-side utility
-    const userAccess = await getUserAccess(userId)
+    const userAccess = await getUserAccess(session.user.id)
 
     return res.status(200).json({
       authenticated: true,

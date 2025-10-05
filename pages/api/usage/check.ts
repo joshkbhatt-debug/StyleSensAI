@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { supabaseAdmin } from '../../../lib/supabaseAdmin'
-import { getUserAccess, checkWordLimit } from '../../../utils/access.server'
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
+import { checkWordLimit } from '../../../utils/access.server'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -8,8 +8,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    // Get user session
-    const { data: { session }, error } = await supabaseAdmin.auth.getSession()
+    const supabase = createServerSupabaseClient({ req, res })
+    const { data: { session }, error } = await supabase.auth.getSession()
+
     if (error || !session?.user) {
       return res.status(401).json({ error: 'Unauthorized' })
     }
@@ -19,7 +20,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Invalid wordsToAdd parameter' })
     }
 
-    // Check word limit using server-side utility
     const result = await checkWordLimit(session.user.id, wordsToAdd)
 
     return res.status(200).json(result)

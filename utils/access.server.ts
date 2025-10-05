@@ -91,22 +91,33 @@ export async function checkWordLimit(userId: string, wordsToAdd: number): Promis
 export async function incrementWordUsage(userId: string, wordsUsed: number): Promise<void> {
   try {
     const today = new Date().toISOString().split('T')[0]
-    
-    // Upsert usage counter
+
+    const { data: existing } = await supabaseAdmin
+      .from('usage_counters')
+      .select('words_used')
+      .eq('user_id', userId)
+      .eq('date', today)
+      .maybeSingle()
+
+    const currentUsage = existing?.words_used || 0
+    const newTotal = currentUsage + wordsUsed
+
     const { error } = await supabaseAdmin
       .from('usage_counters')
       .upsert({
         user_id: userId,
         date: today,
-        words_used: wordsUsed
+        words_used: newTotal
       }, {
         onConflict: 'user_id,date'
       })
 
     if (error) {
       console.error('Error incrementing word usage:', error)
+      throw error
     }
   } catch (error) {
     console.error('Error incrementing word usage:', error)
+    throw error
   }
 } 

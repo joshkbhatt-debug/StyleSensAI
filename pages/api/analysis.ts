@@ -1,46 +1,54 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { getOpenAI } from '../../utils/aiProviders';
-import { SYSTEM_PROMPT, buildUserPrompt } from '../../utils/prompts';
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { callAIProvider, AIProvider } from '../../utils/aiProviders'
+import { SYSTEM_PROMPT, buildUserPrompt } from '../../utils/prompts'
+import { supabaseAdmin } from '../../lib/supabaseAdmin'
+import { checkWordLimit, incrementWordUsage } from '../../utils/access.server'
+import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { text, style } = req.body as { text?: string; style?: string; };
-  if (!text || !style) return res.status(400).json({ error: 'Missing text or style' });
-
-  let openai;
-  try { 
-    openai = getOpenAI(); 
-  } catch (e: any) {
-    return res.status(500).json({ error: e.message || 'OpenAI configuration error' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const userPrompt = buildUserPrompt(text, style);
-
   try {
-    const completion = await openai.chat.completions.create({
-      model: process.env.OPENAI_MODEL || 'gpt-4o',
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: userPrompt }
-      ],
-      temperature: 0.2,
-      frequency_penalty: 0.3
-    });
+    const supabase = createServerSupabaseClient({ req, res })
+    const { data: { session }, error: authError } = await supabase.auth.getSession()
 
-    const raw = completion.choices?.[0]?.message?.content || '';
-    let data: any = {};
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      const match = raw.match(/\{[\s\S]*\}/);
-      if (match) data = JSON.parse(match[0]);
+    if (authError || !session?.user) {
+      return res.status(401).json({ error: 'Unauthorized' })
     }
-    if (!data.correctedText) data.correctedText = '';
-    if (!Array.isArray(data.suggestions)) data.suggestions = [];
 
-    res.status(200).json(data);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message || 'OpenAI request failed' });
+    const { text, style, provider = 'openai' } = req.body as {
+      text?: string
+      style?: string
+      provider?: AIProvider
+    }
+
+    if (!text || !style) {
+      return res.status(400).json({ error: 'Missing text or style' })
+    }
+
+    const wordCount = text.trim().split(/\s+/).length
+
+    const limitCheck = await checkWordLimit(session.user.id, wordCount)
+    if (!limitCheck.allowed) {
+      return res.status(429).json({
+        error: 'Daily word limit exceeded',
+        remaining: limitCheck.remaining
+      })
+    }
+
+    const userPrompt = buildUserPrompt(text, style)
+
+    const result = await callAIProvider(provider, SYSTEM_PROMPT, userPrompt)
+
+    await incrementWordUsage(session.user.id, wordCount)
+
+    return res.status(200).json(result)
+  } catch (error: any) {
+    console.error('Analysis API error:', error)
+    return res.status(500).json({
+      error: error.message || 'AI processing failed'
+    })
   }
 }
